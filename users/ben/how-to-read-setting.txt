@@ -1,0 +1,14 @@
+header:
+noted in square brackets, start has the name, end has "end"+ name
+example: colour settings
+[colour]
+...
+[end colour]
+
+colour:
+<element> = <r>,<g>,<b> (+bold)
++bold signifies the element to be bolded
+
+spaces/comments:
+spaces are ignored
+">> " is comment syntax

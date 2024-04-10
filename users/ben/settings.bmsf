@@ -1,0 +1,24 @@
+[colours]
+
+>> events
+birthday = 0,221,255, +bold
+event = 255, 51, 153
+today = 255,251,0, +bold
+tomorrow = 252,104,3
+holiday = 215,100,255, + bold
+vacation = 255,180,0, +bold
+
+>> months
+january = 173,216,230, +bold    >> TODO:
+february = 255,182,193, +bold   >> bold can only be read if theres a comma in front of it, 
+march = 5,135,67, +bold         >> try changing that ?
+april = 0,208,98, +bold
+may = 210,175,255, +bold
+june = 253,200,131, +bold
+july = 255,127,80, +bold
+august = 255,160,0, +bold
+september = 255,51,4, +bold
+october = 125,0,228, +bold
+november = 165,42,42, +bold
+december = 14, 124, 6, +bold
+[end colours]
