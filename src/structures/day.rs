@@ -1,19 +1,19 @@
 use std::hash::Hash;
 use std::vec;
 
-use chrono::{Datelike, Local, NaiveDate};
+use chrono::{Datelike, Local, NaiveDate, Utc};
 use serde::{Serialize, Deserialize};
 
 use crate::{display::colours::*, structures::month::Month};
 use crate::structures::{event::Event, holiday::Holiday};
 
-use super::holiday::{holiday_hash_map, ontario_public_holidays};
+use super::holiday::{self, holiday_hash_map, ontario_public_holidays};
 use super::time24h::Time24h;
 
 
 #[derive(Serialize, Deserialize, Clone)]
 pub struct Day {
-    pub num: usize,
+    pub num: u8,
     pub month: u8,
     pub year_no: u16,
     pub day_name: String,
@@ -29,7 +29,7 @@ pub struct Day {
 
 impl Day {
 
-    pub fn new(day: usize, month: u8, year: u16, h_type: Holiday) -> Day {
+    pub fn new(day: u8, month: u8, year: u16, h_type: Holiday) -> Day {
         Day {
             num: day,
             month: month,
@@ -40,7 +40,7 @@ impl Day {
         }
     }
 
-    pub fn holiday(day: usize, month: u8, year: u16, name: String, h_type: Holiday) -> Day {
+    pub fn holiday(day: u8, month: u8, year: u16, name: String, h_type: Holiday) -> Day {
         
         let event_name = match h_type {
             Holiday::Birthday => "Birthday",
@@ -74,7 +74,7 @@ impl Day {
     pub fn today() -> Day {
         let today = Local::now();
         Day::new(
-            today.day() as usize, 
+            today.day() as u8, 
             today.month() as u8, 
             today.year() as u16, 
             Holiday::None
@@ -165,11 +165,29 @@ impl Day {
 
         for e in &self.events {
             if e.icon.len() != 0 {
-                icon = format!("  {} ", e.icon.to_string());
+                icon = format!("{} ", e.icon.to_string());
             }
         }
 
         icon
+    }
+
+
+    pub fn formatted_date(&self) -> String {
+        
+        if self.icon() != "" {
+            return self.colour(self.icon());
+        }
+
+        let mut date_number = String::from("");
+
+        if self.num < 10 {
+            date_number = format!("0{}", self.num);
+        } else {
+            date_number = format!("{}", self.num)
+        }
+
+        self.colour(date_number)
     }
 }   
 
@@ -186,7 +204,7 @@ impl Day {
         && self.year_no == other.year_no
     }
 
-    pub fn equals(&self, d: usize, m: u8, y: u16) -> bool {
+    pub fn equals(&self, d: u8, m: u8, y: u16) -> bool {
            self.num == d 
         && self.month == m
         && self.year_no == y
@@ -213,6 +231,34 @@ impl Day {
             println!("{}  {}",day_label, e.as_string());
             
         }
+    }
+
+    fn colour(&self, text: String) -> String {
+
+        if Day::today().equals(self.num as u8, self.month, self.year_no) {
+            return colour_today(&text);
+        } 
+
+        // set colour for the 'day number'
+        let holidays = holiday::all_holidays();
+        let mut formatted_text = String::from(&text);
+        for h in holidays.iter() {
+            if h.equals(self.num as u8, self.month, self.year_no) {
+                formatted_text = match h.holiday_type {
+                    Holiday::Birthday => colour_birthday(&formatted_text).to_string(),
+                    Holiday::PublicHoliday => colour_holiday(&formatted_text).to_string(),
+                    Holiday::Vacation => colour_vacations(&formatted_text).to_string(),
+                    Holiday::None => continue,
+                };
+            }
+        }
+        if formatted_text != text { return formatted_text; }
+
+        if self.events.len() > 0 {
+            println!("colouring an event!");
+            return colour_event(&text);
+        }
+        text
     }
 
     

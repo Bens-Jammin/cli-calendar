@@ -45,41 +45,12 @@ pub fn get_weeks_formatted(month: &Month) -> Vec<String> {
 
         let day = month.days.get(d-1).unwrap();
 
-
-       let day_icon = day.icon();
-
         // I want monday to have less left padding so that it fits into boxes better
         // i.e. it centers the calendar in a content box better
         let date_left_padding = if week_day_count == 0 { String::from("") } else { String::from("  ") };
-        let mut formatted_day_number = if day_icon.len() == 0 {
-            if d < 10 {
-                format!("{}0{}",date_left_padding, d)
-            } else { 
-                format!("{}{}",date_left_padding, d) 
-            }
-        } else { day_icon };
+        let formatted_day_number = format!("{}{}",date_left_padding, day.formatted_date());
+
         
-        if day.has_non_special_events() {
-            formatted_day_number = colour_event(&formatted_day_number);
-        }
-
-        // set colour for the 'day number'
-        let holidays = holiday::all_holidays();
-        for h in holidays.iter() {
-            if h.equals(d, month.number, month.year) {
-                formatted_day_number = match h.holiday_type {
-                    Holiday::Birthday => colour_birthday(&formatted_day_number).to_string(),
-                    Holiday::PublicHoliday => colour_holiday(&formatted_day_number).to_string(),
-                    Holiday::Vacation => colour_vacations(&formatted_day_number).to_string(),
-                    Holiday::None => continue,
-                };
-            }
-        }
-
-        if Day::today().equals(d, month.number, month.year) {
-            formatted_day_number = colour_today(&formatted_day_number).to_string();
-        } 
-
         week = String::from(week) + &formatted_day_number; 
         week_day_count += 1;
 

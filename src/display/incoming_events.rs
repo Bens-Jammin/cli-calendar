@@ -106,5 +106,5 @@ pub fn get_incoming_events(month: &Month, next_month: &Month) -> Vec<String> {
     }
     events
 }
-
+    
 

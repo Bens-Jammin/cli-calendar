@@ -1,5 +1,4 @@
-use data_io::{load::load_year, paths::json_path};
-use display::{calendar::year::{calendar_year, show_year}, content_box::{self, ALIGNMENT}, progress_bar};
+use display::{calendar::year::calendar_year, content_box::{self, ALIGNMENT}, progress_bar};
 use structures::{event::Event, time24h::Time24h, year::Year};
 mod tui_handler;
 mod display;

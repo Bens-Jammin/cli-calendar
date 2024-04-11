@@ -57,7 +57,7 @@ impl Month {
 
         for d in 1..=Month::num_days(month_no, year) {
             vec.push(
-                Day::new(d, month_no, year, Holiday::None)
+                Day::new(d as u8, month_no, year, Holiday::None)
             );
         }
         vec

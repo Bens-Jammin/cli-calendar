@@ -62,47 +62,47 @@ pub fn ontario_public_holidays() -> Vec<Day> {
 }
 
 
-fn family_day(year: i32) -> usize {
+fn family_day(year: i32) -> u8 {
     let february = NaiveDate::from_ymd_opt(year, 2, 1).unwrap();
     let mut third_monday = february.with_month(2).unwrap().with_day(15).unwrap();
     while third_monday.weekday() != Weekday::Mon {
         third_monday = third_monday.succ_opt().unwrap();
     }
-    (third_monday.day0() + 1) as usize
+    (third_monday.day0() + 1) as u8
 }
 
-fn victoria_day(year: i32) -> usize {
+fn victoria_day(year: i32) -> u8 {
     let mut may_25 = NaiveDate::from_ymd_opt(year, 5, 25).unwrap();
     while may_25.weekday() != Weekday::Mon {
         may_25 = may_25.pred_opt().unwrap();
     }
-    (may_25.day0() + 1) as usize
+    (may_25.day0() + 1) as u8
 }
 
-fn civic_holiday(year: i32) -> usize {
+fn civic_holiday(year: i32) -> u8 {
     let august = NaiveDate::from_ymd_opt(year, 8, 1).unwrap();
     let mut first_monday = august.with_month(8).unwrap().with_day(1).unwrap();
     while first_monday.weekday() != Weekday::Mon {
         first_monday = first_monday.succ_opt().unwrap();
     }
-    (first_monday.day0() + 1) as usize
+    (first_monday.day0() + 1) as u8
 }
 
-fn labour_day(year: i32) -> usize {
+fn labour_day(year: i32) -> u8 {
     let september = NaiveDate::from_ymd_opt(year, 9, 1).unwrap();
     let mut first_monday = september.with_month(9).unwrap().with_day(1).unwrap();
     while first_monday.weekday() != Weekday::Mon {
         first_monday = first_monday.succ_opt().unwrap();
     }
-    (first_monday.day0() + 1) as usize
+    (first_monday.day0() + 1) as u8
 }
 
-fn thanksgiving(year: i32) -> usize {
+fn thanksgiving(year: i32) -> u8 {
     let mut october_14 = NaiveDate::from_ymd_opt(year, 10, 14).unwrap();
     while october_14.weekday() != Weekday::Mon {
         october_14 = october_14.pred_opt().unwrap();
     }
-    (october_14.day0() + 1) as usize
+    (october_14.day0() + 1) as u8
 }
 
 // https://www.geeksforgeeks.org/how-to-calculate-the-easter-date-for-a-given-year-using-gauss-algorithm/
@@ -125,9 +125,9 @@ pub fn easter_monday(y: u16) -> Day {
         Day::holiday(18, 4, y, String::from("Easter Monday"), Holiday::PublicHoliday)
     } else {
         if days > 31 {
-            Day::holiday((days-31) as usize, 4, y, String::from("Easter Monday"), Holiday::PublicHoliday)
+            Day::holiday((days-31) as u8, 4, y, String::from("Easter Monday"), Holiday::PublicHoliday)
         } else {
-            Day::holiday(days as usize, 3, y, String::from("Easter Monday"), Holiday::PublicHoliday)
+            Day::holiday(days as u8, 3, y, String::from("Easter Monday"), Holiday::PublicHoliday)
         }
     }
 }
@@ -146,6 +146,8 @@ fn good_friday(y: u16) -> Day {
     Day::holiday(good_friday_day, good_friday_month, year,String::from("Good Friday"), Holiday::PublicHoliday)
 }
 
+
+// NOTE: soon to be obsolete. Events now have an icon attribute.
 pub fn holiday_hash_map() -> HashMap<Day, String> {
     let mut hashmap = HashMap::new();
 

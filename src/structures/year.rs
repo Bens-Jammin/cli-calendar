@@ -109,7 +109,7 @@ impl Year {
 
     pub fn set_date(&mut self, day: Day) {
         if let Some(month) = self.months.get_mut((day.month - 1) as usize) {
-            if let Some(day_to_update) = month.days.get_mut(day.num - 1) {
+            if let Some(day_to_update) = month.days.get_mut((day.num - 1) as usize) {
                 *day_to_update = day;
             } else {
                 println!("Day {} does not exist in month number {} (days vector in month has {} elements)", day.num, day.month, month.days.len());
