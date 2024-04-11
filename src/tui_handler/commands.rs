@@ -57,13 +57,17 @@ pub fn add() {
     let event_icon = std_rw::std_str();
     clear(3);
 
+    println!("Is this event a priority? (Y/N)");
+    let is_priority = std_rw::std_bool();
+    clear(2);
 
     let event = Event { 
         name: String::from(event_name.trim()), 
         description: String::from(event_desc.trim()), 
         start: event_start.clone(), 
         end: event_end.clone(),
-        icon: if event_icon.len() == 0 { String::new() } else { String::from(event_icon) } 
+        icon: if event_icon.len() == 0 { String::new() } else { String::from(event_icon) },
+        priority: is_priority
     };
 
     year.add_event(d.clone(),m.clone(),&event);

@@ -1,3 +1,5 @@
+use core::num;
+
 use serde::{Serialize, Deserialize};
 
 use super::{day::Day, holiday::Holiday};
@@ -77,6 +79,24 @@ impl Month {
 // ###############
 
 impl Month {
+
+    pub fn month_abbreviation(number: u8) -> String {
+        match number {
+            1 => String::from("Jan"),
+            2 => String::from("Feb"),
+            3 => String::from("Mar"),
+            4 => String::from("Apr"),
+            5 => String::from("May"),
+            6 => String::from("Jun"),
+            7 => String::from("Jul"),
+            8 => String::from("Aug"),
+            9 => String::from("Sep"),
+            10 => String::from("Oct"),
+            11 => String::from("Nov"),
+            12 => String::from("Dec"),
+            _ => panic!("Invalid month number. It must be between 1 and 12.")
+        }
+    }
 
     pub fn day(&self, d: usize) -> &Day {
         self.days.get(d).unwrap()

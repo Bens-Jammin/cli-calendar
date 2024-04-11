@@ -37,6 +37,7 @@ pub fn fit_text_to_char_width(txt: &String, width: usize) -> Vec<String> {
 }
 
 
+
 pub fn validate_vector_size(max_string_size: usize, vec: &Vec<String> ) -> (bool, usize) {
 
     for str in vec.iter() {

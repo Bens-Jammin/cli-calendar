@@ -25,9 +25,7 @@ pub fn std_str() -> String {
     .read_line(&mut result)
     .expect("Failed to read input.");
 
-    print!("Before: {result}");
     let _ = result.trim();
-    println!("After: {result}");
     result
 }
 
@@ -36,6 +34,11 @@ pub fn std_time() -> Time24h {
     let h = stdin_int() as usize;
     let m = stdin_int() as usize;
 
-
     Time24h::new(h, m)
 }
+
+
+pub fn std_bool() -> bool {
+    let ans = std_str();
+    ans.to_lowercase() == String::from("Y")
+} 

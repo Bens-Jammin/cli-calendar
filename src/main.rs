@@ -1,4 +1,5 @@
-use display::{calendar::year::calendar_year, content_box::{self, ALIGNMENT}, progress_bar};
+use display::{calendar::year::calendar_year, content_box::{self, ALIGNMENT}, incoming_events::{self, *}, progress_bar};
+use format::text_fitting::*;
 use structures::{event::Event, time24h::Time24h, year::Year};
 mod tui_handler;
 mod display;
@@ -19,15 +20,17 @@ fn main() {
         name: String::from("New Music"),
         description: String::from("Kerry King new album: 'From Hell I rise'"),
         start: Time24h::default(),
-        end: Time24h::new(23,59)
+        end: Time24h::new(23,59),
+        priority: false
     };
 
     let event2 = Event{
         icon: String::from(""),
         name: String::from("Date"),
-        description: String::from("Watching 'Saltburn' with Remy"),
+        description: String::from("Test event!!!!! (not a priority)"),
         start: Time24h::default(),
-        end: Time24h::new(23, 59)
+        end: Time24h::new(23, 59),
+        priority: false
     };
 
     let event3 = Event{
@@ -35,7 +38,8 @@ fn main() {
         name: String::from("Apt. Viewing"),
         description: String::from("House viewing at 260 Mona Ave."),
         start: Time24h::new(14, 0),
-        end: Time24h::new(15, 0)
+        end: Time24h::new(15, 0),
+        priority: true
     };
     
     year.add_event(17,4, &event2);
@@ -58,7 +62,9 @@ fn main() {
     ];
  
 
-    let small_top_box = content_box::text_box(40, 23, "test".to_owned(), ALIGNMENT::LEFT);
+    let upcoming_events = incoming_events::get_incoming_events(year.current_month(), year.next_month());
+
+    let small_top_box = content_box::vec_box(40, 23,&upcoming_events , ALIGNMENT::LEFT);
     let small_mid_box = content_box::vec_box(40,13, &progress_info, ALIGNMENT::CENTER);
     //let small_bottom_box = content_box::text_box(40,5,0,0, "This box is on the bottom! :3".to_owned());
 

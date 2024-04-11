@@ -50,7 +50,7 @@ impl Day {
         };
         let (s, e) = Time24h::all_day();
 
-        let mut holiday_icon = String::new();
+        let holiday_icon = String::new();
 
         Day {
             holiday_type: h_type, 
@@ -64,7 +64,8 @@ impl Day {
                     description: name, 
                     start: s,
                     end : e,
-                    icon: holiday_icon
+                    icon: holiday_icon,
+                    priority: false
                 }
             ]
         }
@@ -125,29 +126,6 @@ pub fn remove_event(&mut self, idx: usize) {
 // ###############
 
 impl Day {
-
-    pub fn events(&self) -> Vec<String> {
-        let mut events: Vec<String> = Vec::new();
-
-        for e in &self.events {
-            let today = chrono::Utc::now().day() as usize;
-            let mut day_label = match self.num as isize - today as isize {
-                0 =>  colour_today("today"),
-                _ =>  String::from(&self.day_name)
-            };
-            let day_label_len = match self.num as isize - today as isize {
-                0 => 5,
-                _ => (&self.day_name).len()
-            };
-
-            let padding_size: usize = 7 ;
-            let day_padding = if day_label_len > padding_size { String::from("") } else {" ".repeat( padding_size - day_label_len )};
-            day_label += &(day_padding + &Month::name_from_month_number(self.month) +" "+&(self.num.to_string())+" "+ &self.year_no.to_string());
-            events.push(format!("{} | {}",day_label, e.as_string()));
-        }
-        events
-    }
-
 
     /// returns the icon representation of the date.
     /// The icon to use is the first event in the vector that has an icon
@@ -229,9 +207,29 @@ impl Day {
             let day_padding = if day_label_len > padding_size { String::from("") } else {" ".repeat( padding_size - day_label_len )};
             day_label += &(day_padding + &Month::name_from_month_number(self.month) +" "+&(self.num.to_string())+" "+ &self.year_no.to_string());
             println!("{}  {}",day_label, e.as_string());
-            
         }
     }
+
+    
+    pub fn events(&self) -> Vec<String> {
+        let mut events: Vec<String> = vec![];
+        for e in &self.events {
+            let today = chrono::Utc::now().day() as usize;
+            let mut day_label = match self.num as isize - today as isize {
+                0 =>  colour_today("Today"),
+                1 =>  colour_tomorrow("Tomorrow"),
+                _ =>  String::from(&self.day_name)
+            };
+
+            let padding_size: usize = 9 ;
+            let day_padding = if day_label.len() > padding_size { String::from("") } else {" ".repeat( padding_size - day_label.len() )};
+            day_label += &(day_padding + &Month::name_from_month_number(self.month) +" "+&(self.num.to_string())+" "+ &self.year_no.to_string());
+            events.push(format!("{} |",day_label));
+            events.push(format!("   {}",e.as_string()));
+        }
+        events
+    }
+
 
     fn colour(&self, text: String) -> String {
 
@@ -255,7 +253,6 @@ impl Day {
         if formatted_text != text { return formatted_text; }
 
         if self.events.len() > 0 {
-            println!("colouring an event!");
             return colour_event(&text);
         }
         text
@@ -291,6 +288,31 @@ impl Day {
     fn calculate_day_name(day: u32, month: u32, year: i32) -> String {
         let date = NaiveDate::from_ymd_opt(year, month, day).expect("Error parsing date");
         date.weekday().to_string()
+    }
+
+
+    /// returns the 'title' of the day, to be used for upcoming events.
+    /// 
+    /// The title contains the name (i.e. Monday, Tuesday, ...) unless that day is today, and the day and month
+    /// 
+    /// ### Example
+    /// Today   Apr 11
+    /// Friday  Apr 12
+    /// ... 
+    pub fn title(&self) -> String {
+        let max_name_length = 7;
+
+        let mut title = format!("{}{}",self.day_name, " ".repeat(max_name_length - self.day_name.len()) );
+
+        if self.equals_day(&Day::today()) {
+            title = format!("{}{}","Today"," ".repeat(max_name_length - 5));
+        }
+
+        if self.num < 10 {
+            return format!("{} {} 0{}",title, Month::name_from_month_number(self.month), self.num) 
+    
+        }
+        format!("{} {} {}",title, Month::name_from_month_number(self.month), self.num)
     }
 
 }

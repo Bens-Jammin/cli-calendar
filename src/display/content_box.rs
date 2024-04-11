@@ -67,7 +67,6 @@ pub fn vec_box(width: usize, height: usize, text: &Vec<String>, alignment: ALIGN
             Some(txt) => txt,
             None => ""
         };
-    
         let (left_space_size, right_space_size) = match alignment {
             ALIGNMENT::CENTER => center_align_buffers(width as u8, count_visible_chars(sentence) as u8),
             ALIGNMENT::LEFT => left_align_buffers(width as u8, count_visible_chars(sentence) as u8),
@@ -91,9 +90,11 @@ fn left_align_buffers(width: u8, text_width: u8 ) -> (u8, u8) {
 
     let left_buffer_size = 1;
     // width - 2 (walls of the box chars) - 1 (size of the left 'buffer') = width - 3
-    let right_buffer_size = (width - 3 - text_width) as u8;
+    let mut right_buffer_size = (width as i8 - 3 - text_width as i8);
 
-    (left_buffer_size, right_buffer_size)
+    if right_buffer_size <= 0 { right_buffer_size = 0; }
+
+    (left_buffer_size, right_buffer_size as u8)
 }
 
 
