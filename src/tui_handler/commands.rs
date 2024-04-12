@@ -77,7 +77,6 @@ pub fn add() {
         Ok(_) =>println!("Event successfully saved.\n name: {} \n description: {} \n date: {}-{}, duration: ({}-->{})",event_name, event_desc,d,m, event_start.format(), event_end.format()),
         Err(e) => println!("An error occurred while saving event details -> {}", e.to_string() ),
     }
-    year.month(m as usize).day(d as usize).print_events();
     
 }
 

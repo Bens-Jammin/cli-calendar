@@ -1,5 +1,6 @@
 use serde::{Serialize, Deserialize};
-
+use format::emoji::is_valid_emoji;
+use crate::format;
 use super::time24h::Time24h;
 
 
@@ -23,7 +24,9 @@ pub struct Event {
 impl Event {
 
     pub fn new(name: String, desc: String, start: Time24h, end: Time24h, icon: String, priority:bool) -> Self {
-        if !is_emoji(&icon) { panic!("icon must be an emoji. (found {})", icon)}
+
+
+        if !is_valid_emoji(&icon) { panic!("icon must be an emoji. (found {:?})", icon)}
 
         let icon_string = if icon == String::from(" ") { String::from("") } else { icon };
         Event {

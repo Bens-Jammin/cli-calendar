@@ -5,42 +5,6 @@ use chrono::Datelike;
 use crate::structures::month::Month;
 
 
-pub fn show_upcoming_events(month: &Month, next_month: &Month) {
-    let today = chrono::Utc::now().weekday();
-    let day_num = chrono::Utc::now().day();
-    let m = Month::name_from_month_number(chrono::Utc::now().month().try_into().unwrap());
-    let y = chrono::Utc::now().year();
-
-    let date = match today {
-        Mon => "Monday, ",
-        Tue =>  "Tuesday, ",
-        Wed =>  "Wednesday, ",
-        Thu =>  "Thursday, ",
-        Fri =>  "Friday, ",
-        Sat =>  "Saturday, ",
-        Sun =>  "Sunday, ",
-    };
-
-    let formatted_date = format!("{}{} {}, {}", date, m, day_num, y);
-    println!("\nToday is {}.\n\nUpcoming events this month:\n",formatted_date);
-    // todo: should go to the next month too if possible (make it a second arg?)
-    
-    for d in &month.days {
-        if (day_num..=day_num + 7).contains(&(d.num as u32)) {
-            d.print_events();
-        }
-    }
-
-   for d in &next_month.days {
-        
-        if (day_num..=day_num + 7 - month.days.len() as u32 ).contains(&(d.num as u32)) {
-            d.print_events();
-        }else{
-            break;
-        } 
-    } 
-}
-
 /// returns a vector of formatted events coming in the next week. 
 /// 
 /// 

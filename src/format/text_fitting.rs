@@ -1,3 +1,6 @@
+use unic::emoji::char::is_emoji;
+
+use super::emoji::is_valid_emoji;
 
 
 pub fn fit_text_to_char_width(txt: &String, width: usize) -> Vec<String> {
@@ -49,18 +52,22 @@ pub fn validate_vector_size(max_string_size: usize, vec: &Vec<String> ) -> (bool
 
 
 pub fn count_visible_chars(s: &str) -> usize {
+
     let mut count = 0;
     let mut in_escape = false;
     let mut long_escape = false;
 
     for c in s.chars() {
+
+        if is_valid_emoji( &String::from(c) ) { println!("got one"); count += 2; continue; }
+
         if in_escape && !long_escape && c == '[' {
             long_escape = true;
         }
         if c == '\x1b' {
             in_escape = true;
         }
-        if !in_escape && !long_escape {
+        if !in_escape && !long_escape { // Exclude \u{fe0f}
             count += 1;
         }
         if in_escape && !long_escape && c != '\x1b' {
@@ -71,6 +78,5 @@ pub fn count_visible_chars(s: &str) -> usize {
             long_escape = false;
         }
     }
-
     count
 }

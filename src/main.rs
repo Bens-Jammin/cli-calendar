@@ -1,6 +1,6 @@
 use display::{calendar::year::calendar_year, content_box::{self, ALIGNMENT}, incoming_events::{self, *}, progress_bar};
 use format::text_fitting::*;
-use structures::{event::Event, time24h::Time24h, year::Year};
+use structures::{event::Event, holiday::ontario_public_holidays, time24h::Time24h, year::Year};
 mod tui_handler;
 mod display;
 mod structures;
@@ -16,7 +16,7 @@ fn main() {
 
     let mut year = Year::new(); 
     let event = Event{
-        icon: String::from("𖤐"),
+        icon: String::from("𖤐 "),
         name: String::from("New Music"),
         description: String::from("Kerry King new album: 'From Hell I rise'"),
         start: Time24h::default(),
@@ -75,9 +75,8 @@ fn main() {
 
     content_box::print_box_content_2_cols(big_box, right_hand_column);
 
-
-    // let args = vec!["program_name".to_string(), "add".to_string()];
-    // handle_initial_args(args);
-
+    // for e in ontario_public_holidays() {
+    //     println!("emoji: '{}', width: {}", e.icon(), count_visible_chars(&e.icon()));
+    // }
 }
 

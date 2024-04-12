@@ -7,7 +7,7 @@ use serde::{Serialize, Deserialize};
 use crate::{display::colours::*, structures::month::Month};
 use crate::structures::{event::Event, holiday::Holiday};
 
-use super::holiday::{self, holiday_hash_map, ontario_public_holidays};
+use super::holiday::{self, ontario_public_holidays};
 use super::time24h::Time24h;
 
 
@@ -40,7 +40,7 @@ impl Day {
         }
     }
 
-    pub fn holiday(day: u8, month: u8, year: u16, name: String, h_type: Holiday) -> Day {
+    pub fn holiday(day: u8, month: u8, year: u16, name: String, h_type: Holiday, holiday_icon: String) -> Day {
         
         let event_name = match h_type {
             Holiday::Birthday => "Birthday",
@@ -49,8 +49,6 @@ impl Day {
             Holiday::None => panic!("Holiday must have a valid Holiday enum value (NOT NONE !!!)."),
         };
         let (s, e) = Time24h::all_day();
-
-        let holiday_icon = String::new();
 
         Day {
             holiday_type: h_type, 
@@ -143,7 +141,7 @@ impl Day {
 
         for e in &self.events {
             if e.icon.len() != 0 {
-                icon = format!("{} ", e.icon.to_string());
+                icon = format!("{}", e.icon.to_string());
             }
         }
 
@@ -154,10 +152,10 @@ impl Day {
     pub fn formatted_date(&self) -> String {
         
         if self.icon() != "" {
-            return self.colour(self.icon());
+            return self.icon();
         }
 
-        let mut date_number = String::from("");
+        let date_number: String;
 
         if self.num < 10 {
             date_number = format!("0{}", self.num);
@@ -186,28 +184,6 @@ impl Day {
            self.num == d 
         && self.month == m
         && self.year_no == y
-    }
-
-    pub fn print_events(&self) {
-        for e in &self.events {
-            let today = chrono::Utc::now().day() as usize;
-            let mut day_label = match self.num as isize - today as isize {
-                0 =>  colour_today("today"),
-                1 =>  colour_tomorrow("tomorrow"),
-                _ =>  String::from(&self.day_name)
-            };
-            let day_label_len = match self.num as isize - today as isize {
-                0 => 5,
-                1 => 8,
-                -1 => 9,
-                _ => (&self.day_name).len()
-            };
-
-            let padding_size: usize = 10 ;
-            let day_padding = if day_label_len > padding_size { String::from("") } else {" ".repeat( padding_size - day_label_len )};
-            day_label += &(day_padding + &Month::name_from_month_number(self.month) +" "+&(self.num.to_string())+" "+ &self.year_no.to_string());
-            println!("{}  {}",day_label, e.as_string());
-        }
     }
 
     
