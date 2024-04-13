@@ -65,10 +65,10 @@ impl Year {
         if m > 12 { panic!("month is the second parameter. The month number should be in the inclusive range [1, 12] ") }
         if d > 31 { panic!("The day number should be in the inclusive range [1, 31].") }
 
-        let day = self.month(m as usize -1).day(d as usize -1);
+        let day = self.month(m as usize -1).day(d as usize);
         let mut updated_day = day.duplicate();
         updated_day.add_event(e);
-        self.months[m as usize -1].update_day(d as usize -1, updated_day);
+        self.months[m as usize -1].update_day(d as usize, updated_day);
     }
 
 
@@ -102,22 +102,12 @@ impl Year {
 
     fn add_holidays(&mut self) {
         for h in all_holidays() {
-            self.set_date(h);
+            let month = h.month;
+            let day = h.day;
+            self.add_event(day, month, &h.event)
         }
     }
 
-
-    pub fn set_date(&mut self, day: Day) {
-        if let Some(month) = self.months.get_mut((day.month - 1) as usize) {
-            if let Some(day_to_update) = month.days.get_mut((day.num - 1) as usize) {
-                *day_to_update = day;
-            } else {
-                println!("Day {} does not exist in month number {} (days vector in month has {} elements)", day.num, day.month, month.days.len());
-            }
-        } else {
-            println!("Month number {} does not exist", day.month);
-        }
-    }
 
 
     pub fn clear_all(&mut self) {

@@ -1,6 +1,8 @@
 use serde::{Serialize, Deserialize};
 use chrono::{Datelike, NaiveDate, Weekday};
 
+use crate::structures::event::Event;
+
 use super::day::Day;
 
 
@@ -17,46 +19,60 @@ pub enum Holiday {
 //       FUNCTIONS
 // #####################
 
+pub struct EventDate {
+    pub event: Event,
+    pub day: u8,
+    pub month: u8
+}
+impl EventDate {
+    pub fn new(e: Event, d: u8, m:u8) -> EventDate {
+        EventDate {
+            event: e,
+            day: d,
+            month: m
+        }
+    }
+}
 
 
-pub fn all_holidays() -> Vec<Day> {
+pub fn all_holidays() -> Vec<EventDate> {
     let mut holidays = birthdays();
     let pub_holidays = ontario_public_holidays();
     holidays.extend( pub_holidays );
     holidays
 }
 
-pub fn birthdays() -> Vec<Day> {
-    let year = chrono::Utc::now().year() as u16; 
+pub fn birthdays() -> Vec<EventDate> {
+    let year = chrono::Utc::now().year() as u16;
     vec![
-        Day::holiday(9,9, year, String::from("My Birthday"), Holiday::Birthday, String::new()),
-        Day::holiday(13,11,year, String::from("Tyler Heinz's Birthday"), Holiday::Birthday , String::new()),
-        Day::holiday(24, 3, year, String::from("Lauren Wheatley's Birthday"), Holiday::Birthday, String::new()),
-        Day::holiday(4,10,year, String::from("Kaydence White's Birthday"), Holiday::Birthday, String::new())
+        EventDate::new( Event::holiday(String::from("My Birthday"), Holiday::Birthday, String::new()), 9, 9 ),
+        EventDate::new( Event::holiday(String::from("Tyler Heinz's Birthday"), Holiday::Birthday, String::new()), 13, 11),
+        EventDate::new( Event::holiday(String::from("Lyauren Wheatley's Birthda"), Holiday::Birthday, String::new()), 24, 3),
+        EventDate::new( Event::holiday(String::from("Kaydence White's Birthday"), Holiday::Birthday, String::new()), 4, 10),
     ]
 }
 
 
-pub fn ontario_public_holidays() -> Vec<Day> {
+pub fn ontario_public_holidays() -> Vec<EventDate> {
     let year = chrono::Utc::now().year() as u16; 
     let y = year as i32;
     vec![
-        Day::holiday(1               , 1, year, String::from("New Years Day"), Holiday::PublicHoliday, String::from("🎉")),
-        Day::holiday(family_day(y)   , 2, year, String::from("Family Day"), Holiday::PublicHoliday, String::new()),
-        Day::holiday(14              , 2, year, String::from("Valentine's Day"), Holiday::PublicHoliday,String::from("❤️")),
+        EventDate::new(Event::holiday(String::from("New Years Day"), Holiday::PublicHoliday, String::from("🎉")), 1, 1),
+        EventDate::new(Event::holiday(String::from("Family Day"), Holiday::PublicHoliday, String::new()), family_day(y), 2),
+        EventDate::new(Event::holiday(String::from("Valentine's Day"), Holiday::PublicHoliday,String::from("❤️") ), 14, 2),
         good_friday(year),
         easter_monday(year),
-        Day::holiday(1                , 4, year, String::from("April Fool's Day"), Holiday::PublicHoliday, String::new()),
-        Day::holiday(victoria_day(y)  , 5, year, String::from("Victoria Day"), Holiday::PublicHoliday, String::new()),
-        Day::holiday(1                , 7, year, String::from("Canada Day"), Holiday::PublicHoliday, String::from("🍁")),
-        Day::holiday(civic_holiday(y) , 8, year, String::from("Civic Holiday"), Holiday::PublicHoliday, String::new()),
-        Day::holiday(labour_day(y)    , 9, year, String::from("Labour Day"), Holiday::PublicHoliday, String::from("⚒️")),
-        Day::holiday(30               , 9, year, String::from("Truth and Reconciliation Day"), Holiday::PublicHoliday, String::new()),
-        Day::holiday(thanksgiving(y)  , 10, year, String::from("Thanksgiving"), Holiday::PublicHoliday, String::from("🦃")),
-        Day::holiday(31               , 10, year, String::from("Halloween"), Holiday::PublicHoliday, String::from("🎃")),
-        Day::holiday(11               , 11, year, String::from("Rememberance Day"), Holiday::PublicHoliday, String::new()),
-        Day::holiday(25               , 12, year, String::from("Christmas"), Holiday::PublicHoliday, String::from("🎄")),
-        Day::holiday(31               , 12, year, String::from("New Years Eve"), Holiday::PublicHoliday, String::from("🎉")), 
+        EventDate::new(Event::holiday(String::from("April Fool's Day"), Holiday::PublicHoliday, String::from("") ), 1, 4 ),
+        EventDate::new(Event::holiday(String::from("Victoria Day"), Holiday::PublicHoliday, String::from("") ), victoria_day(y), 5 ),
+        EventDate::new(Event::holiday(String::from("Canada Day"), Holiday::PublicHoliday, String::from("🍁") ), 1, 7),
+        EventDate::new(Event::holiday(String::from("Civic Holiday"), Holiday::PublicHoliday, String::from("") ), civic_holiday(y) ,8 ),
+        EventDate::new(Event::holiday(String::from("Labour Day"), Holiday::PublicHoliday, String::from("⚒️") ), labour_day(y),9 ),        
+        EventDate::new(Event::holiday(String::from("Truth and Reconciliation Day"), Holiday::PublicHoliday, String::from("") ), 30,9), 
+        EventDate::new(Event::holiday(String::from("Thanksgiving"), Holiday::PublicHoliday, String::from("🦃") ), thanksgiving(y),10 ),        
+        EventDate::new(Event::holiday(String::from("Halloween"), Holiday::PublicHoliday, String::from("🎃") ), 31, 10),
+        EventDate::new(Event::holiday(String::from("Rememberance Day"), Holiday::PublicHoliday, String::from("") ), 11, 11),        
+        EventDate::new(Event::holiday(String::from("Christmas"), Holiday::PublicHoliday, String::from("🎄") ), 25, 12 ),
+        EventDate::new(Event::holiday(String::from("New Years Eve"), Holiday::PublicHoliday, String::from("🎉") ), 31, 12),        
     ]
 }
 
@@ -105,7 +121,7 @@ fn thanksgiving(year: i32) -> u8 {
 }
 
 // https://www.geeksforgeeks.org/how-to-calculate-the-easter-date-for-a-given-year-using-gauss-algorithm/
-pub fn easter_monday(y: u16) -> Day {
+pub fn easter_monday(y: u16) -> EventDate {
     let a = y % 19;
     let b = y % 4;
     let c = y % 7;
@@ -119,22 +135,22 @@ pub fn easter_monday(y: u16) -> Day {
     let days = 22 + d + e;
 
     if d == 29 && e == 6 {
-        Day::holiday(19, 4, y, String::from("Easter Monday"), Holiday::PublicHoliday, String::from("✝️"))
+        EventDate::new(Event::holiday(String::from("Easter Monday"), Holiday::PublicHoliday, String::from("✝️") ), 19, 4)
     } else if d == 28 && e == 6 {
-        Day::holiday(18, 4, y, String::from("Easter Monday"), Holiday::PublicHoliday, String::from("✝️"))
+        EventDate::new(Event::holiday(String::from("Easter Monday"), Holiday::PublicHoliday, String::from("✝️") ), 18, 4)
     } else {
         if days > 31 {
-            Day::holiday((days-31) as u8, 4, y, String::from("Easter Monday"), Holiday::PublicHoliday, String::from("✝️"))
+            EventDate::new(Event::holiday(String::from("Easter Monday"), Holiday::PublicHoliday, String::from("✝️") ), (days-31) as u8, 4)
         } else {
-            Day::holiday(days as u8, 3, y, String::from("Easter Monday"), Holiday::PublicHoliday, String::from("✝️"))
+            EventDate::new(Event::holiday(String::from("Easter Monday"), Holiday::PublicHoliday, String::from("✝️") ), days as u8, 3)
         }
     }
 }
 
-fn good_friday(y: u16) -> Day {
+fn good_friday(y: u16) -> EventDate {
     let year = chrono::Utc::now().year() as u16; 
     let easter_mon = easter_monday(y);
-    let mut good_friday_day = easter_mon.num - 2; // Subtract 2 days to get Good Friday
+    let mut good_friday_day = easter_mon.day - 2; // Subtract 2 days to get Good Friday
 
     // Adjust the month if the day is less than 1
     let mut good_friday_month = easter_mon.month;
@@ -142,7 +158,7 @@ fn good_friday(y: u16) -> Day {
         good_friday_day += 30; // Assuming March has 30 days for simplicity
         good_friday_month -= 1;
     }
-    Day::holiday(good_friday_day, good_friday_month, year,String::from("Good Friday"), Holiday::PublicHoliday, String::from("✝️"))
+    EventDate::new(Event::holiday(String::from("Good Friday"), Holiday::PublicHoliday, String::from("✝️") ), good_friday_day, good_friday_month)
 }
 
 

@@ -7,6 +7,7 @@ use serde::{Serialize, Deserialize};
 use crate::{display::colours::*, structures::month::Month};
 use crate::structures::{event::Event, holiday::Holiday};
 
+use super::event::{self, EventType};
 use super::holiday::{self, ontario_public_holidays};
 use super::time24h::Time24h;
 
@@ -50,6 +51,13 @@ impl Day {
         };
         let (s, e) = Time24h::all_day();
 
+        let event_type = match h_type {
+            Holiday::Birthday => EventType::Birthday,
+            Holiday::PublicHoliday => EventType::PublicHoliday,
+            Holiday::Vacation => EventType::Vacation,
+            Holiday::None => EventType::Event,
+        };
+
         Day {
             holiday_type: h_type, 
             num: day,
@@ -63,7 +71,8 @@ impl Day {
                     start: s,
                     end : e,
                     icon: holiday_icon,
-                    priority: false
+                    priority: false,
+                    event_type: event_type
                 }
             ]
         }
@@ -89,6 +98,18 @@ impl Day {
             events: (*self.events).to_vec(),
             holiday_type: self.holiday_type,
         }
+    }
+
+    pub fn null() -> Day {
+        Day {
+            num: 0,
+            month: 0,
+            year_no: 0,
+            day_name: String::new(),
+            events: Vec::new(),
+            holiday_type: Holiday::None
+        }
+
     }
 
 }
@@ -217,12 +238,12 @@ impl Day {
         let holidays = holiday::all_holidays();
         let mut formatted_text = String::from(&text);
         for h in holidays.iter() {
-            if h.equals(self.num as u8, self.month, self.year_no) {
-                formatted_text = match h.holiday_type {
-                    Holiday::Birthday => colour_birthday(&formatted_text).to_string(),
-                    Holiday::PublicHoliday => colour_holiday(&formatted_text).to_string(),
-                    Holiday::Vacation => colour_vacations(&formatted_text).to_string(),
-                    Holiday::None => continue,
+            if self.equals(h.day, h.month, self.year_no) {
+                formatted_text = match h.event.event_type {
+                    EventType::Birthday => colour_birthday(&formatted_text).to_string(),
+                    EventType::PublicHoliday => colour_holiday(&formatted_text).to_string(),
+                    EventType::Vacation => colour_vacations(&formatted_text).to_string(),
+                    EventType::Event => continue,
                 };
             }
         }
@@ -281,7 +302,7 @@ impl Day {
         let mut title = format!("{}{}",self.day_name, " ".repeat(max_name_length - self.day_name.len()) );
 
         if self.equals_day(&Day::today()) {
-            title = format!("{}{}","Today"," ".repeat(max_name_length - 5));
+            title = format!("Today{}"," ".repeat(max_name_length - 5));
         }
 
         if self.num < 10 {

@@ -1,6 +1,7 @@
+use data_io::{paths::json_path, save::save_year};
 use display::{calendar::year::calendar_year, content_box::{self, ALIGNMENT}, incoming_events::{self, *}, progress_bar};
 use format::text_fitting::*;
-use structures::{event::Event, holiday::ontario_public_holidays, time24h::Time24h, year::Year};
+use structures::{event::{Event, EventType}, time24h::Time24h, year::Year};
 mod tui_handler;
 mod display;
 mod structures;
@@ -21,7 +22,8 @@ fn main() {
         description: String::from("Kerry King new album: 'From Hell I rise'"),
         start: Time24h::default(),
         end: Time24h::new(23,59),
-        priority: false
+        priority: false,
+        event_type: EventType::Event
     };
 
     let event2 = Event{
@@ -30,7 +32,8 @@ fn main() {
         description: String::from("Test event!!!!! (not a priority)"),
         start: Time24h::default(),
         end: Time24h::new(23, 59),
-        priority: false
+        priority: false,
+        event_type: EventType::Event
     };
 
     let event3 = Event{
@@ -39,7 +42,8 @@ fn main() {
         description: String::from("House viewing at 260 Mona Ave."),
         start: Time24h::new(14, 0),
         end: Time24h::new(15, 0),
-        priority: true
+        priority: true,
+        event_type: EventType::Event
     };
     
     year.add_event(17,4, &event2);
@@ -63,6 +67,8 @@ fn main() {
  
 
     let upcoming_events = incoming_events::get_incoming_events(year.current_month(), year.next_month());
+
+    save_year(&year, &json_path());
 
     let small_top_box = content_box::vec_box(40, 23,&upcoming_events , ALIGNMENT::LEFT);
     let small_mid_box = content_box::vec_box(40,13, &progress_info, ALIGNMENT::CENTER);

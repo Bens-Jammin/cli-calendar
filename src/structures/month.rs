@@ -2,7 +2,7 @@ use core::num;
 
 use serde::{Serialize, Deserialize};
 
-use super::{day::Day, holiday::Holiday};
+use super::{day::Day, event::Event, holiday::Holiday};
 
 
 #[derive(Serialize, Deserialize)]
@@ -39,6 +39,14 @@ impl Month {
         }
     }
     
+    pub fn null() -> Month {
+        Month {
+            number: 0,
+            year: 0,
+            name: String::from("Null month."),
+            days: vec![]
+        }
+    }
 }
 
 
@@ -54,7 +62,7 @@ impl Month {
     }
 
     fn make_days(month_no: u8, year: u16) -> Vec<Day> {
-        let mut vec = vec![];
+        let mut vec = vec![Day::null()];
 
 
         for d in 1..=Month::num_days(month_no, year) {
@@ -69,6 +77,10 @@ impl Month {
         for day in &mut self.days {
             day.clear_events();
         }
+    }
+
+    pub fn add_event(&mut self, day_num: usize, event: &Event) {
+        self.days[day_num-1].add_event(event);
     }
 
 }
@@ -137,7 +149,7 @@ impl Month {
             10 => String::from("October"),
             11 => String::from("November"),
             12 => String::from("December"),
-            _ => panic!("Invalid month number"),       
+            _ => panic!("Invalid month number. found {}", month_no),       
         }
     }
 

@@ -1,7 +1,7 @@
 use serde::{Serialize, Deserialize};
 use format::emoji::is_valid_emoji;
 use crate::format;
-use super::time24h::Time24h;
+use super::{holiday::Holiday, time24h::Time24h};
 
 
 
@@ -9,12 +9,20 @@ use super::time24h::Time24h;
 pub struct Event {
     pub name: String,
     pub description: String,
+    pub event_type: EventType,
     pub start: Time24h,
     pub end: Time24h,
     pub icon: String,
     pub priority: bool
 }
 
+#[derive(Serialize, Deserialize, PartialEq, Eq, Hash, Clone)]
+pub enum EventType {
+    Birthday,
+    PublicHoliday,
+    Vacation,
+    Event
+}
 
 // #############################
 //       IMPLEMENTATIONS
@@ -35,9 +43,35 @@ impl Event {
             start: start,
             end: end,
             icon: icon_string,
-            priority: priority
+            priority: priority,
+            event_type: EventType::Event
         }
         
+    }
+
+
+    pub fn holiday( holiday: String, holiday_type: Holiday, icon: String ) -> Event {
+        let event_name = match holiday_type {
+            Holiday::Birthday => "Birthday",
+            Holiday::PublicHoliday => "Public Holiday",
+            Holiday::Vacation => "Vacation",
+            Holiday::None => panic!("Holiday must have a valid Holiday enum value (NOT NONE !!!)."),
+        };
+        let event_type = match holiday_type {
+            Holiday::Birthday => EventType::Birthday,
+            Holiday::PublicHoliday => EventType::PublicHoliday,
+            Holiday::Vacation => EventType::Vacation,
+            Holiday::None => EventType::Event
+        };
+ 
+        Event::new(
+            String::from(event_name),
+            holiday,
+            Time24h::default(),
+            Time24h::new(23,59),
+            icon,
+            true
+        )
     }
 
     pub fn as_string(&self) -> String {
@@ -66,6 +100,7 @@ impl Event {
         
         format!("({} --> {})", self.start.format(), self.end.format())
     }
+
 
 }
 

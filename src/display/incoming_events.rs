@@ -28,12 +28,10 @@ use crate::structures::month::Month;
 pub fn get_incoming_events(month: &Month, next_month: &Month) -> Vec<String> {
 
     let todays_number = chrono::Utc::now().day();
-
     let mut upcoming_events = vec![
         String::from("Upcoming events this week:"),
         String::new()
     ];
-
     for d in todays_number..=todays_number+7 {
         if d > month.days.len() as u32 { break; }
 

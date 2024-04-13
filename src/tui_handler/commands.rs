@@ -1,5 +1,5 @@
 use chrono::{Datelike, Utc};
-use crate::{data_io::{load, paths::json_path, save::save_year, std_rw}, display::{self, calendar::year::calendar_year}, structures::{event::Event, year::Year}, tui_handler::terminal_format::clear};
+use crate::{data_io::{load, paths::json_path, save::save_year, std_rw}, display::{self, calendar::year::calendar_year}, structures::{event::{Event, EventType}, year::Year}, tui_handler::terminal_format::clear};
 
 
 fn year() -> Year { load::load_year(&json_path()).unwrap() }
@@ -67,7 +67,8 @@ pub fn add() {
         start: event_start.clone(), 
         end: event_end.clone(),
         icon: if event_icon.len() == 0 { String::new() } else { String::from(event_icon) },
-        priority: is_priority
+        priority: is_priority,
+        event_type: EventType::Event
     };
 
     year.add_event(d.clone(),m.clone(),&event);

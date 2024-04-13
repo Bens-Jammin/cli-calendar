@@ -3,6 +3,49 @@ use unic::emoji::char::is_emoji;
 use super::emoji::is_valid_emoji;
 
 
+pub fn fit_vec_to_width(text: Vec<String>, width: u16) -> Vec<String> {
+
+    let mut formatted_text: Vec<String> = vec![];
+
+    for str in text {
+        formatted_text.extend( fit_text_to_char_width(&str, width as usize) );
+    }
+
+    formatted_text
+}
+
+
+/// adds an overhang to text like how they want it in some reference pages. Does not add an overhang to the first page. 
+/// 
+/// ### Example
+/// 
+/// ```
+/// "
+/// Here is some sample
+///     text I am using
+///     to show as an
+///     example for how
+///     the overhang
+///     formatting 
+///     works.
+/// "
+/// ```
+/// 
+pub fn overhang_text(text: Vec<String>, overhang_size: u8) -> Vec<String> {
+    let mut result = Vec::<String>::new();
+    let overhang = " ".repeat(overhang_size as usize);
+
+    for (idx, line) in text.iter().enumerate() {
+        if idx == 0 { 
+            result.push(line.to_string());
+            continue;
+        }
+        result.push(format!("{}{}", overhang, line))
+    }
+    result
+}
+
+
 pub fn fit_text_to_char_width(txt: &String, width: usize) -> Vec<String> {
 
     let words: Vec<&str> = txt.split(" ").collect();
@@ -59,7 +102,7 @@ pub fn count_visible_chars(s: &str) -> usize {
 
     for c in s.chars() {
 
-        if is_valid_emoji( &String::from(c) ) { println!("got one"); count += 2; continue; }
+        if is_valid_emoji( &String::from(c) ) { count += 2; continue; }
 
         if in_escape && !long_escape && c == '[' {
             long_escape = true;
